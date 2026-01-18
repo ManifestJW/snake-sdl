@@ -6,46 +6,58 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.os }} (${{ matrix.build_type }})
+    name: ${{ matrix.os }} (${{ matrix.build_type }}, ${{ matrix.triplet }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        build_type: [Debug, Release]
+        include:
+          # Windows static dependencies (MSVC)
+          - os: windows-latest
+            build_type: Debug
+            triplet: x64-windows-static
+          - os: windows-latest
+            build_type: Release
+            triplet: x64-windows-static
+
+          # Linux: keep it simple for now (still reproducible)
+          # If you later want fully-static Linux, we'll switch to a custom triplet/toolchain.
+          - os: ubuntu-latest
+            build_type: Debug
+            triplet: x64-linux
+          - os: ubuntu-latest
+            build_type: Release
+            triplet: x64-linux
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Installs (and caches) CMake + Ninja
       - name: Setup CMake + Ninja
-        uses: lukka/get-cmake@latest
+        uses: lukka/get-cmake@latest 
 
-      # Sets up vcpkg and enables binary caching via GitHub Actions cache
-      - name: Setup vcpkg
-        uses: lukka/run-vcpkg@v11
+      - name: Setup vcpkg (manifest mode + caching)
+        uses: lukka/run-vcpkg@v11 :contentReference[oaicite:2]{index=2}
         with:
-          # This makes run-vcpkg read your repo's vcpkg.json (manifest mode)
           vcpkgJsonGlob: '**/vcpkg.json'
-          # Keep vcpkg inside the runner workspace (good for caching)
           vcpkgDirectory: '${{ github.workspace }}/vcpkg'
 
-      - name: Configure (CMake + vcpkg toolchain)
+      - name: Configure
         run: >
           cmake -S . -B build
           -G Ninja
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+        # Triplet selection via VCPKG_TARGET_TRIPLET is the documented approach. :contentReference[oaicite:3]{index=3}
 
       - name: Build
         run: cmake --build build --parallel
 
-      # Upload the built executable so you can download it from the workflow run
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: snake-${{ matrix.os }}-${{ matrix.build_type }}
+          name: snake-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.triplet }}
           path: |
             build/snake
             build/snake.exe
