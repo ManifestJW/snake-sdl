@@ -42,7 +42,19 @@ jobs:
           sudo apt-get install -y \
             autoconf autoconf-archive automake libtool \
             pkg-config \
-            python3-venv libltdl-dev
+            python3-venv libltdl-dev \
+            \
+            # SDL3 video backends (X11 + Wayland) + input
+            libx11-dev libxext-dev libxrandr-dev libxrender-dev libxss-dev \
+            libxcursor-dev libxi-dev libxinerama-dev libxkbcommon-dev \
+            libwayland-dev wayland-protocols libdecor-0-dev \
+            \
+            # GL/EGL (common SDL renderer paths)
+            libegl1-mesa-dev libgl1-mesa-dev \
+            \
+            # Audio backend often used on Linux
+            libasound2-dev
+
 
       - name: Setup CMake + Ninja
         uses: lukka/get-cmake@latest
