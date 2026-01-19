@@ -1,6 +1,7 @@
 #include "death_fx.h"
 #include "render.h"
 #include <math.h>
+#include <stdbool.h>
 
 
 /*

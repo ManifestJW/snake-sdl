@@ -1,5 +1,7 @@
 #include "render.h"
 #include <math.h>
+#include <stdbool.h>
+
 
 /*
  * render.c

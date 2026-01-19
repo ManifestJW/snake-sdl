@@ -1,4 +1,6 @@
 #include "events.h"
+#include <stdbool.h>
+
 
 /*
  * events.c

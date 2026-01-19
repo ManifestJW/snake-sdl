@@ -1,5 +1,8 @@
 #include "snake_draw.h"
 #include <math.h>
+#include <stdlib.h> 
+#include <stdbool.h>
+
 
 /*
  * snake_draw.c
@@ -171,7 +174,11 @@ void SnakeDraw_Render(const App* app, const Snake* snake, float alpha, SnakeDraw
     alpha = clamp01f(alpha);
 
     int n = snake->len;
-    FVec2 centers_px[n];
+    if (n <= 0) return;
+
+    FVec2* centers_px = (FVec2*)malloc((size_t)n * sizeof(*centers_px));
+    if (!centers_px) return;
+
 
     for (int i = 0; i < n; i++) {
         float gx, gy;
@@ -220,4 +227,6 @@ void SnakeDraw_Render(const App* app, const Snake* snake, float alpha, SnakeDraw
         Render_RectFilledPx(app, x, y, (float)app->cell_w, (float)app->cell_h,
                             style.body_r, style.body_g, style.body_b);
     }
+
+    free(centers_px);
 }

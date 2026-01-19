@@ -1,4 +1,6 @@
 #include "apple.h"
+#include <stdbool.h>
+
 
 /*
  * apple.c

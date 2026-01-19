@@ -1,5 +1,7 @@
 #include "snake.h"
 #include <stdlib.h>
+#include <stdbool.h>
+
 
 /*
  * snake.c

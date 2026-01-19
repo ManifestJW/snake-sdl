@@ -1,4 +1,6 @@
 #include "fps.h"
+#include <stdbool.h>
+
 
 /*
  * fps.c

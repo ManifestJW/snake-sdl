@@ -1,4 +1,6 @@
 #include "app.h"
+#include <stdbool.h>
+
 
 /*
  * app.c
