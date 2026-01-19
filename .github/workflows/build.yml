@@ -1,9 +1,13 @@
 name: build
 
+permissions:
+  contents: write
+
 on:
   push:
+    tags:
+      - 'v*'
   pull_request:
-
 jobs:
   build:
     name: ${{ matrix.os }} (${{ matrix.build_type }}, ${{ matrix.triplet }})
@@ -89,3 +93,21 @@ jobs:
           path: |
             build/snake.exe
             build/snake
+      - name: Upload to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/snake.exe
+            build/snake
+      - name: Rename binaries
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            mv build/snake.exe build/snake-windows.exe
+          else
+            mv build/snake build/snake-linux
+          fi
+
+
