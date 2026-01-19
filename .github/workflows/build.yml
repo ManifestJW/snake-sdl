@@ -7,27 +7,18 @@ on:
   push:
     tags:
       - 'v*'
-  pull_request:
+
 jobs:
   build:
-    name: ${{ matrix.os }} (${{ matrix.build_type }}, ${{ matrix.triplet }})
+    name: ${{ matrix.os }} (Release, ${{ matrix.triplet }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: windows-latest
-            build_type: Debug
             triplet: x64-windows-static
-          - os: windows-latest
-            build_type: Release
-            triplet: x64-windows-static
-
           - os: ubuntu-latest
-            build_type: Debug
-            triplet: x64-linux
-          - os: ubuntu-latest
-            build_type: Release
             triplet: x64-linux
 
     steps:
@@ -46,21 +37,18 @@ jobs:
             python3-venv libltdl-dev \
             libx11-dev libxext-dev libxrandr-dev libxrender-dev libxss-dev \
             libxcursor-dev libxi-dev libxinerama-dev libxkbcommon-dev \
+            libsm-dev libice-dev \
             libwayland-dev wayland-protocols libdecor-0-dev \
             libegl1-mesa-dev libgl1-mesa-dev \
             libasound2-dev
 
-
-
       - name: Setup CMake + Ninja
         uses: lukka/get-cmake@latest
 
-      # IMPORTANT: Force MSVC toolchain on Windows so it matches x64-windows-static
       - name: Setup MSVC (Windows)
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
-      # Optional: strip MinGW from PATH in case something installs it
       - name: De-Mingw PATH (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -78,11 +66,10 @@ jobs:
         run: >
           cmake -S . -B build
           -G Ninja
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_BUILD_TYPE=Release
           -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
 
-      # Sanity check: confirm compiler choice (Windows should say cl/MSVC)
       - name: Compiler sanity check (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -107,20 +94,16 @@ jobs:
           fi
 
       - name: Extract changelog for release
-        if: startsWith(github.ref, 'refs/tags/')
         shell: bash
         run: |
           set -euo pipefail
-
           RAW_TAG="${GITHUB_REF_NAME}"     # e.g. v1.0.0
           VER="${RAW_TAG#v}"               # e.g. 1.0.0
 
           echo "Extracting changelog for tag '$RAW_TAG' (version '$VER')"
-
           echo "Changelog headings found:"
           grep -nE '^## \[' CHANGELOG.md || true
 
-          # Match "## [1.0.0]" or "## [v1.0.0]" with optional " - ..." after it.
           awk -v ver="$VER" -v tag="$RAW_TAG" '
             BEGIN { found=0 }
             {
@@ -134,25 +117,9 @@ jobs:
             }
           ' CHANGELOG.md > RELEASE_NOTES.md
 
-          if [ ! -s RELEASE_NOTES.md ]; then
-            echo "ERROR: No changelog section found for '$RAW_TAG' or '$VER'"
-            exit 1
-          fi
-
-          echo "Generated release notes:"
-          echo "------------------------"
-          cat RELEASE_NOTES.md
-      
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: snake-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.triplet }}
-          path: |
-            build/snake-windows.exe
-            build/snake-linux
+          test -s RELEASE_NOTES.md
 
       - name: Upload to GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: |
