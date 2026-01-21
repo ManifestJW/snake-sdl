@@ -24,6 +24,11 @@ jobs:
       - name: Setup CMake + Ninja
         uses: lukka/get-cmake@latest
 
+      - name: Setup Python (Windows)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
       - name: Setup MSVC (Windows)
         uses: ilammy/msvc-dev-cmd@v1
 
@@ -41,7 +46,9 @@ jobs:
 
       - name: Build (Windows)
         shell: cmd
-        run: build-windows.bat release
+        run: |
+          set PYTHON_BIN=python
+          build-windows.bat release
 
       - name: Verify layout
         shell: pwsh

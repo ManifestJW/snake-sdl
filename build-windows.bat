@@ -68,10 +68,12 @@ if exist "%GAME_DIR%" rmdir /s /q "%GAME_DIR%"
 mkdir "%GAME_DIR%"
 
 set "VENV_DIR=launcher\.venv-build"
-set "PYTHON_BIN=py"
-%PYTHON_BIN% -3 --version >nul 2>&1
-if errorlevel 1 (
-    set "PYTHON_BIN=python"
+if not defined PYTHON_BIN set "PYTHON_BIN=py"
+if "%PYTHON_BIN%"=="py" (
+    %PYTHON_BIN% -3 --version >nul 2>&1
+    if errorlevel 1 (
+        set "PYTHON_BIN=python"
+    )
 )
 
 if "%PYTHON_BIN%"=="py" (
