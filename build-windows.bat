@@ -90,7 +90,7 @@ python -m pip install --upgrade pip >nul
 python -m pip install -r launcher\requirements.txt nuitka >nul
 
 echo Building launcher...
-python -m nuitka --standalone --lto=no --enable-plugin=tk-inter --include-package=customtkinter --output-dir="%BUILD_DIR%" --output-filename=launcher launcher\main.py
+python -m nuitka --standalone --assume-yes-for-downloads --lto=no --enable-plugin=tk-inter --include-package=customtkinter --output-dir="%BUILD_DIR%" --output-filename=launcher launcher\main.py
 if errorlevel 1 exit /b 1
 
 set "DIST_DIR=%BUILD_DIR%\main.dist"
