@@ -200,22 +200,19 @@ static void Log_EnsureDir(const char *path) {
 static void Log_OpenFile(void) {
   if (g_log_file)
     return;
-  const char *base = SDL_GetBasePath();
   char path[1024];
   char dir_path[1024];
-  if (base) {
-    SDL_snprintf(dir_path, (int)sizeof(dir_path), "%slogs", base);
-    SDL_snprintf(path, (int)sizeof(path), "%s/snake.log", dir_path);
-  } else {
-    SDL_snprintf(dir_path, (int)sizeof(dir_path), "logs");
-    SDL_snprintf(path, (int)sizeof(path), "%s/snake.log", dir_path);
-  }
+  snprintf(dir_path, (int)sizeof(dir_path), "logs");
+  snprintf(path, (int)sizeof(path), "%s/snake.log", dir_path);
   Log_EnsureDir(dir_path);
   g_log_file = fopen(path, "a");
   if (g_log_file) {
     setvbuf(g_log_file, NULL, _IOLBF, 0);
     SDL_SetLogOutputFunction(log_to_file, g_log_file);
-    SDL_Log("Logging to: %s", path);
+    char msg[1060];
+    snprintf(msg, (int)sizeof(msg), "Logging to: %s", path);
+    log_to_file(g_log_file, SDL_LOG_CATEGORY_APPLICATION,
+                SDL_LOG_PRIORITY_INFO, msg);
   }
 }
 
