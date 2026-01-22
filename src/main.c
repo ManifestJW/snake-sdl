@@ -173,15 +173,23 @@ static void log_to_file(void *userdata, int category, SDL_LogPriority priority,
     return;
   time_t now = time(NULL);
   struct tm tm_now;
+  bool has_time = true;
 #ifdef _WIN32
-  localtime_s(&tm_now, &now);
+  if (localtime_s(&tm_now, &now) != 0)
+    has_time = false;
 #else
-  localtime_r(&now, &tm_now);
+  if (!localtime_r(&now, &tm_now))
+    has_time = false;
 #endif
   char ts[32];
-  strftime(ts, sizeof(ts), "%Y-%m-%d %H:%M:%S", &tm_now);
-  fprintf(fp, "[%s] [%s] [%d] %s\n", ts, log_priority_name(priority), category,
-          message);
+  if (has_time &&
+      strftime(ts, sizeof(ts), "%Y-%m-%d %H:%M:%S", &tm_now) > 0) {
+    fprintf(fp, "[%s] [%s] [%d] %s\n", ts, log_priority_name(priority),
+            category, message);
+  } else {
+    fprintf(fp, "[unknown-time] [%s] [%d] %s\n", log_priority_name(priority),
+            category, message);
+  }
   fflush(fp);
 }
 
@@ -208,11 +216,9 @@ static void Log_OpenFile(void) {
   g_log_file = fopen(path, "a");
   if (g_log_file) {
     setvbuf(g_log_file, NULL, _IOLBF, 0);
+    fprintf(g_log_file, "Logging to: %s\n", path);
+    fflush(g_log_file);
     SDL_SetLogOutputFunction(log_to_file, g_log_file);
-    char msg[1060];
-    snprintf(msg, (int)sizeof(msg), "Logging to: %s", path);
-    log_to_file(g_log_file, SDL_LOG_CATEGORY_APPLICATION,
-                SDL_LOG_PRIORITY_INFO, msg);
   }
 }
 
