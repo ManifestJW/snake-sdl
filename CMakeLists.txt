@@ -70,6 +70,28 @@ target_compile_options(snake PRIVATE
 
 set(CMAKE_BUILD_RPATH_USE_ORIGIN ON)
 
+# This is like uber temporary for the love of god replace this immediately
+set(BGM_PATH "${CMAKE_BINARY_DIR}/bgm.wav")
+if (NOT EXISTS "${BGM_PATH}")
+  message(STATUS "Downloading BGM from legoj15.net...")
+  file(DOWNLOAD 
+    "https://legoj15.net/cdn/bgm.wav" 
+    "${BGM_PATH}" 
+    SHOW_PROGRESS
+    tls_verify ON
+  )
+endif()
+
+#This is also a hack
+if (WIN32)
+  add_custom_command(TARGET snake POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<TARGET_FILE:SDL3_mixer-shared>
+    $<TARGET_FILE_DIR:snake>
+    COMMENT "Copying SDL3_mixer.dll to executable directory"
+  )
+endif()
+
 # ------------------------------------------------------------
 # Shared library for the Python GUI (ctypes)
 # ------------------------------------------------------------

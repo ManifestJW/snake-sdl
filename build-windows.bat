@@ -124,5 +124,10 @@ if exist "%BUILD_DIR%\snake.exe" (
     exit /b 1
 )
 
+REM This is an absolute bodge and I don't like it.
+echo Copying game assets...
+copy /Y "%BUILD_DIR%\bgm.wav" "%GAME_DIR%\bgm.wav" >nul
+copy /Y "%BUILD_DIR%\*.dll" "%GAME_DIR%\" >nul
+
 echo Built: .\%BUILD_DIR%\launcher.exe
 echo Built: .\%GAME_DIR%\snake.exe
