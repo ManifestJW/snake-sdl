@@ -125,14 +125,15 @@ Windows installation without additional DLLs.
 ### vcpkg setup (all platforms)
 
 Clone vcpkg and set `VCPKG_ROOT` in your shell before building.
-If you already have it cloned, update it first so the baseline includes the
-full audio codec ports.
+This repo pins the vcpkg baseline to commit `01e159b519b7e791cc5bb3548663a26d9c0922a3`,
+so make sure your vcpkg checkout includes that commit.
 
 Linux/macOS (bash/zsh):
 
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
-git pull
+git fetch --tags
+git checkout 01e159b519b7e791cc5bb3548663a26d9c0922a3
 ./bootstrap-vcpkg.sh
 export VCPKG_ROOT="$PWD"
 
@@ -140,7 +141,8 @@ Windows (PowerShell):
 
 git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
-git pull
+git fetch --tags
+git checkout 01e159b519b7e791cc5bb3548663a26d9c0922a3
 .\bootstrap-vcpkg.bat
 $env:VCPKG_ROOT = (Get-Location)
 
