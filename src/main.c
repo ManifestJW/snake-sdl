@@ -775,15 +775,24 @@ int main(int argc, char **argv) {
     Bot_Destroy(&bot);
   }
 
-  if (bgm_track) {
-      MIX_DestroyTrack(bgm_track);
-  }
-  if (bgm_audio) {
-      MIX_DestroyAudio(bgm_audio);
-  }
+// --- BGM: Cleanup (SDL3_mixer API) ---
+  
+  // 1. Destroy the Mixer first. 
+  // This automatically destroys 'bgm_track' and releases the reference to 'bgm_audio'.
   if (mixer) {
       MIX_DestroyMixer(mixer);
   }
+
+  // 2. Destroy the Audio.
+  // Since the track (and mixer) are gone, this releases the final reference 
+  // and frees the memory.
+  if (bgm_audio) {
+      MIX_DestroyAudio(bgm_audio);
+  }
+
+  // Note: We do NOT manually call MIX_DestroyTrack(bgm_track).
+  // The mixer handles that ownership.
+
   MIX_Quit();
 
   Snake_Destroy(&snake);

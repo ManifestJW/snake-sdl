@@ -45,6 +45,8 @@ aux_source_directory("${ROOT}/src" SNAKE_SOURCES)
 # botlib.c is used for the shared library, not the game executable.
 list(REMOVE_ITEM SNAKE_SOURCES "${ROOT}/src/botlib.c")
 
+message(STATUS "SNAKE_SOURCES = ${SNAKE_SOURCES}")
+
 if (SNAKE_SOURCES STREQUAL "")
   message(FATAL_ERROR "No .c files found in ${ROOT}/src")
 endif()
