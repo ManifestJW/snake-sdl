@@ -1,3 +1,8 @@
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 #include <SDL3/SDL.h>
 #include <SDL3_mixer/SDL_mixer.h>
 #include <stdbool.h>
@@ -451,12 +456,34 @@ int main(int argc, char **argv) {
   if (MIX_Init()) {
       // Create a mixer connected to the default playback device
       mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
-      
+
       if (mixer) {
-          // Get the absolute path to the executable's directory
-          char *base_path = SDL_GetBasePath();
-          if (base_path) {
-              const char *bgm_files[] = {"bgm.wav", "bgm.mp3", "bgm.opus", "bgm.flac"};
+          char base_path[1024] = {0};
+          bool path_found = false;
+
+#ifdef _WIN32
+          // WINDOWS: Use native API to avoid CRT malloc/free mismatch crashes
+          if (GetModuleFileNameA(NULL, base_path, sizeof(base_path))) {
+              // GetModuleFileName returns "C:\Path\To\snake.exe"
+              // We need to strip the executable name to get the folder.
+              char *last_slash = strrchr(base_path, '\\');
+              if (last_slash) {
+                  *(last_slash + 1) = '\0'; // Keep the trailing slash
+              }
+              path_found = true;
+          }
+#else
+          // LINUX/MAC: Use SDL (memory safety is usually easier on *nix dynamic linking)
+          char *sdl_path = SDL_GetBasePath();
+          if (sdl_path) {
+              snprintf(base_path, sizeof(base_path), "%s", sdl_path);
+              SDL_free(sdl_path); // Free it immediately after copying
+              path_found = true;
+          }
+#endif
+
+          if (path_found) {
+              const char *bgm_files[] = {"bgm.wav", "bgm.opus", "bgm.mp3", "bgm.flac"};
               int num_files = sizeof(bgm_files) / sizeof(bgm_files[0]);
               char full_path[1024];
 
@@ -470,10 +497,8 @@ int main(int argc, char **argv) {
                       break;
                   }
               }
-              // Always free the path string returned by SDL
-              SDL_free(base_path);
           } else {
-              SDL_Log("Could not get executable base path: %s", SDL_GetError());
+              SDL_Log("Could not determine executable path.");
           }
 
           if (bgm_audio) {
@@ -776,22 +801,13 @@ int main(int argc, char **argv) {
   }
 
 // --- BGM: Cleanup (SDL3_mixer API) ---
-  
-  // 1. Destroy the Mixer first. 
+
   // This automatically destroys 'bgm_track' and releases the reference to 'bgm_audio'.
-  if (mixer) {
+if (mixer) {
+      // Destroying the mixer automatically destroys all Tracks associated with it.
+      // The Tracks will release their hold on the Audio.
       MIX_DestroyMixer(mixer);
   }
-
-  // 2. Destroy the Audio.
-  // Since the track (and mixer) are gone, this releases the final reference 
-  // and frees the memory.
-  if (bgm_audio) {
-      MIX_DestroyAudio(bgm_audio);
-  }
-
-  // Note: We do NOT manually call MIX_DestroyTrack(bgm_track).
-  // The mixer handles that ownership.
 
   MIX_Quit();
 
