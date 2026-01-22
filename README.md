@@ -26,6 +26,8 @@ https://github.com/ManifestJW/snake-sdl/releases
 It is recommended to launch the game through the launcher so you can configure
 human mode and bot mode settings. See `launcher/README.md` for details.
 
+Logs are written to `game/logs/snake.log` in the packaged folder.
+
 ### Keybinds
 
 - `G`: toggle grid mode

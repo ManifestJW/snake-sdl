@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "app.h"
 #include "apple.h"
@@ -86,9 +87,13 @@ static MIX_Audio *load_bgm(MIX_Mixer *mixer) {
     char path[1024];
     if (base) {
       SDL_snprintf(path, (int)sizeof(path), "%s%s", base, bgm_files[i]);
-    } else {
-      SDL_snprintf(path, (int)sizeof(path), "%s", bgm_files[i]);
+      audio = MIX_LoadAudio(mixer, path, false);
+      if (audio) {
+        SDL_Log("BGM loaded: %s", path);
+        break;
+      }
     }
+    SDL_snprintf(path, (int)sizeof(path), "%s", bgm_files[i]);
     audio = MIX_LoadAudio(mixer, path, false);
     if (audio) {
       SDL_Log("BGM loaded: %s", path);
@@ -134,6 +139,75 @@ static void Snake_SyncPrevToSeg(Snake *s) {
   for (int i = 0; i < s->len; i++) {
     s->prev[i] = s->seg[i];
   }
+}
+
+static const char *log_priority_name(SDL_LogPriority priority) {
+  switch (priority) {
+    case SDL_LOG_PRIORITY_VERBOSE:
+      return "VERBOSE";
+    case SDL_LOG_PRIORITY_DEBUG:
+      return "DEBUG";
+    case SDL_LOG_PRIORITY_INFO:
+      return "INFO";
+    case SDL_LOG_PRIORITY_WARN:
+      return "WARN";
+    case SDL_LOG_PRIORITY_ERROR:
+      return "ERROR";
+    case SDL_LOG_PRIORITY_CRITICAL:
+      return "CRITICAL";
+    default:
+      return "LOG";
+  }
+}
+
+static void log_to_file(void *userdata, int category, SDL_LogPriority priority,
+                        const char *message) {
+  FILE *fp = (FILE *)userdata;
+  if (!fp)
+    return;
+  time_t now = time(NULL);
+  struct tm tm_now;
+  localtime_r(&now, &tm_now);
+  char ts[32];
+  strftime(ts, sizeof(ts), "%Y-%m-%d %H:%M:%S", &tm_now);
+  fprintf(fp, "[%s] [%s] [%d] %s\n", ts, log_priority_name(priority), category,
+          message);
+  fflush(fp);
+}
+
+static FILE *g_log_file = NULL;
+
+static void Log_OpenFile(void) {
+  if (g_log_file)
+    return;
+  const char *base = SDL_GetBasePath();
+  char path[1024];
+  if (base) {
+    SDL_snprintf(path, (int)sizeof(path), "%slogs/snake.log", base);
+  } else {
+    SDL_snprintf(path, (int)sizeof(path), "logs/snake.log");
+  }
+  if (base) {
+    char dir_path[1024];
+    SDL_snprintf(dir_path, (int)sizeof(dir_path), "%slogs", base);
+    SDL_CreateDirectory(dir_path);
+  } else {
+    SDL_CreateDirectory("logs");
+  }
+  g_log_file = fopen(path, "a");
+  if (g_log_file) {
+    setvbuf(g_log_file, NULL, _IOLBF, 0);
+    SDL_SetLogOutputFunction(log_to_file, g_log_file);
+    SDL_Log("Logging to: %s", path);
+  }
+}
+
+static void Log_CloseFile(void) {
+  if (!g_log_file)
+    return;
+  SDL_SetLogOutputFunction(NULL, NULL);
+  fclose(g_log_file);
+  g_log_file = NULL;
 }
 
 static void Game_Reset(Snake *snake, Apple *apple, int *score, int *tick_hz,
@@ -479,6 +553,7 @@ int main(int argc, char **argv) {
   if (!App_Init(&app, init_window_w, init_window_h, init_grid_w, init_grid_h)) {
     return 1;
   }
+  Log_OpenFile();
 
   MIX_Mixer *mixer = NULL;
   MIX_Audio *bgm_audio = NULL;
@@ -805,5 +880,6 @@ int main(int argc, char **argv) {
 
   Snake_Destroy(&snake);
   App_Shutdown(&app);
+  Log_CloseFile();
   return 0;
 }

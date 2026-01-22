@@ -185,16 +185,23 @@ jobs:
         with:
           path: dist
 
+      - name: Install zip (Release)
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y zip
+
       - name: Package zips (Release)
         shell: bash
         run: |
           set -euo pipefail
           cd dist
           if [ -d snake-windows ]; then
-            (cd snake-windows && python3 -m zipfile -c ../snake-windows.zip .)
+            (cd snake-windows && zip -r ../snake-windows.zip .)
           fi
           if [ -d snake-linux ]; then
-            (cd snake-linux && python3 -m zipfile -c ../snake-linux.zip .)
+            (cd snake-linux && zip -r ../snake-linux.zip .)
           fi
 
       - name: Extract changelog for release

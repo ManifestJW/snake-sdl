@@ -41,6 +41,11 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 ### Fixed
 - Win screen now always fills the grid without intermittent blank cells.
 
+## [2.1.1-hotfix.1-test.1] - 2026-01-21
+
+### Changed
+- Log output now goes to `game/logs/snake.log`.
+
 
 ## [2.0.0-hotfix.2] - 2026-01-21
 
@@ -85,7 +90,8 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 - Apple spawning and body growth.
 - Optional snapped head rendering style.
 
-[Unreleased]: https://github.com/ManifestJW/snake-sdl/compare/v2.1.1...HEAD
+[Unreleased]: https://github.com/ManifestJW/snake-sdl/compare/v2.1.1-hotfix.1-test.1...HEAD
+[2.1.1-hotfix.1-test.1]: https://github.com/ManifestJW/snake-sdl/releases/tag/v2.1.1-hotfix.1-test.1
 [2.1.1]: https://github.com/ManifestJW/snake-sdl/releases/tag/v2.1.1
 [2.1.0-hotfix.1]: https://github.com/ManifestJW/snake-sdl/releases/tag/v2.1.0-hotfix.1
 [2.1.0]: https://github.com/ManifestJW/snake-sdl/releases/tag/v2.1.0
