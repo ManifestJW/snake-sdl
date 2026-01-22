@@ -17,6 +17,18 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 - 
 
 
+## [2.1.0] - 2026-01-21
+
+### Added
+- Background music playback with asset packaging.
+- Launcher toggle to enable/disable BGM for human and bot modes.
+- Optional audio codec support (opus, vorbis, mpg123, fluidsynth, xmp).
+
+### Changed
+- BGM assets now load from `game/assets` in the packaged build layout.
+- Build scripts copy `assets/` into the packaged game directory.
+
+
 ## [2.0.0-hotfix.2] - 2026-01-21
 
 ### Fixed
@@ -60,7 +72,8 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 - Apple spawning and body growth.
 - Optional snapped head rendering style.
 
-[Unreleased]: https://github.com/ManifestJW/snake-sdl/compare/v2.0.0-hotfix.2...HEAD
+[Unreleased]: https://github.com/ManifestJW/snake-sdl/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/ManifestJW/snake-sdl/releases/tag/v2.1.0
 [2.0.0-hotfix.2]: https://github.com/ManifestJW/snake-sdl/releases/tag/v2.0.0-hotfix.2
 [2.0.0-hotfix.1]: https://github.com/ManifestJW/snake-sdl/releases/tag/v2.0.0-hotfix.1
 [2.0.0]: https://github.com/ManifestJW/snake-sdl/releases/tag/v2.0.0

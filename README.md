@@ -50,6 +50,7 @@ The Linux binary is dynamically linked and depends on common system libraries
 
 On a Ubuntu / Pop!_OS system, install:
 
+```bash
 sudo apt-get update
 sudo apt-get install -y \
   libx11-6 libxext6 libxrandr2 libxrender1 libxss1 \
@@ -58,12 +59,12 @@ sudo apt-get install -y \
   libwayland-client0 libwayland-cursor0 libwayland-egl1 \
   libegl1 libgl1 \
   libasound2 \
-  libogg0 libvorbis0a libvorbisfile3 libopusfile0 \
-  libxmp4 libmpg123-0 \
-  libfluidsynth3
+  libogg0 libvorbis0a libvorbisfile3 libopusfile0
+```
 
 On Fedora/RHEL:
 
+```bash
 sudo dnf install -y \
   libX11 libXext libXrandr libXrender libXScrnSaver \
   libXcursor libXi libXinerama libxkbcommon \
@@ -71,12 +72,12 @@ sudo dnf install -y \
   wayland wayland-client wayland-cursor \
   mesa-libEGL mesa-libGL \
   alsa-lib \
-  libogg libvorbis libvorbisfile opusfile \
-  libxmp mpg123 \
-  fluidsynth
+  libogg libvorbis libvorbisfile opusfile
+```
 
 On Arch:
 
+```bash
 sudo pacman -S --needed \
   libx11 libxext libxrandr libxrender libxscrnsaver \
   libxcursor libxi libxinerama libxkbcommon \
@@ -84,7 +85,8 @@ sudo pacman -S --needed \
   wayland \
   mesa \
   alsa-lib \
-  libogg libvorbis opusfile libxmp mpg123 fluidsynth
+  libogg libvorbis opusfile
+```
 
 You must run the game from a graphical session (Wayland or X11).
 Running from a TTY or over SSH without display forwarding will fail.
@@ -175,12 +177,12 @@ sudo apt-get install -y \
   libwayland-dev wayland-protocols libdecor-0-dev \
   libegl1-mesa-dev libgl1-mesa-dev \
   libasound2-dev \
-  libogg-dev libvorbis-dev libopusfile-dev \
-  libxmp-dev libmpg123-dev \
-  libfluidsynth-dev
+  libogg-dev libvorbis-dev libopusfile-dev
+```
 
 On Fedora/RHEL:
 
+```bash
 sudo dnf install -y \
   autoconf autoconf-archive automake libtool \
   pkgconf zip \
@@ -191,12 +193,12 @@ sudo dnf install -y \
   wayland-devel wayland-protocols-devel libdecor-devel \
   mesa-libEGL-devel mesa-libGL-devel \
   alsa-lib-devel \
-  libogg-devel libvorbis-devel opusfile-devel \
-  libxmp-devel mpg123-devel \
-  fluidsynth-devel
+  libogg-devel libvorbis-devel opusfile-devel
+```
 
 On Arch:
 
+```bash
 sudo pacman -S --needed \
   autoconf autoconf-archive automake libtool \
   pkgconf zip python python-virtualenv tk patchelf libltdl \
@@ -206,7 +208,8 @@ sudo pacman -S --needed \
   wayland wayland-protocols libdecor \
   mesa \
   alsa-lib \
-  libogg libvorbis opusfile libxmp mpg123 fluidsynth
+  libogg libvorbis opusfile
+```
 
 #### Build steps
 

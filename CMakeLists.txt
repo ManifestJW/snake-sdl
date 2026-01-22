@@ -23,6 +23,9 @@ set(SDLMIXER_VORBIS_VORBISFILE_SHARED OFF CACHE BOOL "Link vorbisfile statically
 set(SDLMIXER_MPG123_SHARED OFF CACHE BOOL "Link mpg123 statically" FORCE)
 set(SDLMIXER_MIDI_FLUIDSYNTH_SHARED OFF CACHE BOOL "Link fluidsynth statically" FORCE)
 set(SDLMIXER_MOD_XMP_SHARED OFF CACHE BOOL "Link libxmp statically" FORCE)
+set(SDLMIXER_MP3_MPG123 OFF CACHE BOOL "Disable mpg123 MP3 backend" FORCE)
+set(SDLMIXER_MIDI_FLUIDSYNTH OFF CACHE BOOL "Disable FluidSynth backend" FORCE)
+set(SDLMIXER_MOD_XMP OFF CACHE BOOL "Disable libxmp MOD backend" FORCE)
 
 FetchContent_Declare(
   SDL3_mixer
