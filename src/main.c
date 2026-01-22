@@ -456,7 +456,7 @@ int main(int argc, char **argv) {
           // Get the absolute path to the executable's directory
           char *base_path = SDL_GetBasePath();
           if (base_path) {
-              const char *bgm_files[] = {"bgm.wav", "bgm.opus", "bgm.mp3", "bgm.flac"};
+              const char *bgm_files[] = {"bgm.wav", "bgm.mp3", "bgm.opus", "bgm.flac"};
               int num_files = sizeof(bgm_files) / sizeof(bgm_files[0]);
               char full_path[1024];
 
