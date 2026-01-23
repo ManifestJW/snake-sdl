@@ -65,6 +65,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ ! -d dist ]; then
+            echo "No artifacts directory created. Check that build.yml produced artifacts for this tag."
+            exit 1
+          fi
           if [ -z "$(find dist -mindepth 1 -maxdepth 1 -type d -print -quit)" ]; then
             echo "No artifacts were downloaded into dist/. Check that build.yml produced artifacts."
             exit 1
