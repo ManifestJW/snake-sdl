@@ -7,6 +7,7 @@
 #include <time.h>
 #ifdef _WIN32
 #include <direct.h>
+#include <windows.h>
 #else
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -208,8 +209,31 @@ static void Log_EnsureDir(const char *path) {
 static void Log_OpenFile(void) {
   if (g_log_file)
     return;
-  const char *dir_path = "logs";
-  const char *path = "logs/snake.log";
+  char dir_path[1024];
+  char path[1024];
+#ifdef _WIN32
+  char exe_path[1024];
+  DWORD exe_len = GetModuleFileNameA(NULL, exe_path, (DWORD)sizeof(exe_path));
+  if (exe_len > 0 && exe_len < sizeof(exe_path)) {
+    char *last_sep = strrchr(exe_path, '\\');
+    if (last_sep) {
+      *last_sep = '\0';
+      if (snprintf(dir_path, sizeof(dir_path), "%s\\logs", exe_path) < 0) {
+        snprintf(dir_path, sizeof(dir_path), "logs");
+      }
+    } else {
+      snprintf(dir_path, sizeof(dir_path), "logs");
+    }
+  } else {
+    snprintf(dir_path, sizeof(dir_path), "logs");
+  }
+  if (snprintf(path, sizeof(path), "%s\\snake.log", dir_path) < 0) {
+    snprintf(path, sizeof(path), "logs\\snake.log");
+  }
+#else
+  snprintf(dir_path, sizeof(dir_path), "logs");
+  snprintf(path, sizeof(path), "%s/snake.log", dir_path);
+#endif
   Log_EnsureDir(dir_path);
   #ifdef _WIN32
   if (fopen_s(&g_log_file, path, "a") != 0)
