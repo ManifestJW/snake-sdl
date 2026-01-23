@@ -53,6 +53,10 @@ if (SNAKE_SOURCES STREQUAL "")
   message(FATAL_ERROR "No .c files found in ${ROOT}/src")
 endif()
 
+if (NOT WIN32)
+  list(REMOVE_ITEM SNAKE_SOURCES "${ROOT}/src/winmain.c")
+endif()
+
 # ------------------------------------------------------------
 # Main Executable
 # ------------------------------------------------------------
@@ -69,10 +73,9 @@ endif()
 
 if (NOT WIN32)
   set_property(TARGET snake PROPERTY LINKER_LANGUAGE CXX)
+else()
+  set_target_properties(snake PROPERTIES WIN32_EXECUTABLE ON)
 endif()
-
-# Use console subsystem so standard main() links on Windows.
-# (WIN32_EXECUTABLE requires a WinMain entry point.)
 
 target_compile_options(snake PRIVATE
   $<$<C_COMPILER_ID:MSVC>:/W4>
