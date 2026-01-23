@@ -488,7 +488,6 @@ static bool parse_cycle_meta(const char *path, CycleMeta *out, char *err,
 }
 
 int main(int argc, char **argv) {
-  SDL_SetMainReady();
   // ------------------------------
   // Bot mode (off by default)
   // ------------------------------

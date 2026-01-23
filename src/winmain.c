@@ -3,8 +3,6 @@
 #  include <windows.h>
 
 extern int main(int argc, char **argv);
-extern int __argc;
-extern char **__argv;
 
 int WINAPI WinMain(HINSTANCE instance,
                    HINSTANCE prev_instance,
